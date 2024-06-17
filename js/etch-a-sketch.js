@@ -1,12 +1,13 @@
-const container = document.querySelector('.container');
+const drawingboard = document.querySelector('.drawingboard');
 const makeGridBtn = document.querySelector('.button');
-const C_WIDTH = container.getBoundingClientRect().width;
+let C_WIDTH = drawingboard.getBoundingClientRect().width;
 let mouseHasBeenClicked = false;
 
 drawBoard(16);
 
+
 makeGridBtn.addEventListener('click', () => {
-    container.textContent = '';
+    drawingboard.textContent = '';
     let gridSize = document.querySelector('input').value;
     if (gridSize > 0 && gridSize <= 100) {
         drawBoard(gridSize);
@@ -15,7 +16,8 @@ makeGridBtn.addEventListener('click', () => {
     }
 });
 
-container.addEventListener('click', clickSwitch);
+drawingboard.addEventListener('mousedown', clickSwitch);
+drawingboard.addEventListener('mouseup', clickSwitch);
 
 function clickSwitch(event) {
     if (!mouseHasBeenClicked) {
@@ -29,22 +31,25 @@ function clickSwitch(event) {
 
 function startDraw(event) {
     mouseOver(event);
-    container.addEventListener('mouseover', mouseOver);
+    drawingboard.addEventListener('mouseover', mouseOver);
 }
 
 function finishDraw(event) {
-    container.removeEventListener('mouseover', mouseOver);
+    drawingboard.removeEventListener('mouseover', mouseOver);
 }
 
 function mouseOver(event) {
-    event.target.style.backgroundColor = "black";
+    event.target.style.backgroundColor = changeBackgroundColor();
+   // event.target.style.border = '1px solid black';
 }
 
 function drawBoard(gridSize) {
-    let unit = gridSize;
-    for (let i = 0; i < unit; i++) {
-        for (let j = 0; j < unit; j++) {
-            container.appendChild(createPixel(gridSize));
+    for (i = 0 ; i < gridSize ; i++){
+        let gridRow = document.createElement('div');
+        gridRow.classList.add('gridRow');
+        drawingboard.appendChild(gridRow);
+        for (j = 0 ; j < gridSize ; j++){
+            gridRow.appendChild(createPixel(gridSize));
         }
     }
 }
@@ -53,10 +58,15 @@ function createPixel(gridSize) {
     const pixel = document.createElement('div');
     pixel.classList.add('pixel');
     pixel.style.width = C_WIDTH * (1 / gridSize) + 'px';
-    pixel.style.height = C_WIDTH * (1 / gridSize) + 'px';
+    // pixel.style.height = C_WIDTH * (1 / gridSize) + 'px';
+    pixel.style.aspectRatio = '1 / 1';
     return pixel;
 }
 
 function changeBackgroundColor() {
-    return `black`;
+    return `rgb(${randomNumber()} ${randomNumber()} ${randomNumber()})`;
+}
+
+function randomNumber (){
+    return Math.floor(Math.random() * 255);
 }
